@@ -105,6 +105,20 @@ sap.ui.define([
 			this._setUIChanges();
 		},
 
+		onResetDataSource : function () {
+			let oModel = this.getView().getModel();
+			// The (...) means it's deferred. When it's invoked later, it will bind the operation to the model.
+			let oOperation = oModel.bindContext("/ResetDataSource(...)");
+
+			oOperation.invoke().then(function () {
+					oModel.refresh();
+					MessageToast.show(this._getText("sourceResetSuccessMessage"));
+				}.bind(this), function (oErrors) {
+					MessageBox.error(oError.message);
+				}
+			);
+		},
+
 		onSave : function () {
 			let fnSuccess = function () {
 				this._setBusy(false);
