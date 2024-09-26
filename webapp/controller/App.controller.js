@@ -23,7 +23,7 @@ sap.ui.define([
 			let	oViewModel = new JSONModel({
 					busy : false,
 					hasUIChanges : false,
-					usernameEmpty : true,
+					usernameEmpty : false,
 					order : 0
 				});
 			this.getView().setModel(oViewModel, "appView");
@@ -53,6 +53,28 @@ sap.ui.define([
 					return true;
 				}
 			});
+		},
+
+		onDelete : function () {
+		    let oContext;
+		    let oSelected = this.byId("peopleList").getSelectedItem();
+		    let sUserName;
+ 
+		    if (oSelected) {
+		        oContext = oSelected.getBindingContext();
+		        sUserName = oContext.getProperty("UserName");
+		        oContext.delete().then(function () {
+		            MessageToast.show(this._getText("deletionSuccessMessage", sUserName));
+		        }.bind(this), function (oError) {
+		            this._setUIChanges();
+		            if (oError.canceled) {
+		                MessageToast.show(this._getText("deletionRestoredMessage", sUserName));
+		                return;
+		            }
+		            MessageBox.error(oError.message + ": " + sUserName);
+		        }.bind(this));
+		        this._setUIChanges(true);
+		    }
 		},
 
 		onInputChange : function (oEvt) {
