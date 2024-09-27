@@ -230,7 +230,22 @@ sap.ui.define([
 		_setDetailArea : function (oUserContext) {
 			let oDetailArea = this.byId("detailArea");
 			let oLayout = this.byId("defaultLayout");
+			let oOldContext;
 			let oSearchField = this.byId ("searchField");
+
+			if (!oDetailArea) {
+				return; // do nothing when running within view destruction
+			}
+
+			oOldContext= oDetailArea.getBindingContext();
+			if (oOldContext) {
+				oOldContext.setKeepAlive(false);
+			}
+			if (oUserContext) {
+				oUserContext.setKeepAlive(true,
+						// hide details if kept entity was refreshed but does not exist anymore
+						this._setDetailArea.bind(this));
+			}
 
 			oDetailArea.setBindingContext(oUserContext || null);
 
